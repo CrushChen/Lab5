@@ -45,6 +45,15 @@ bool IsRequestLessEqual(int i) {
   //
   // TODO: implement this function
   //
+  int j = Request[i];
+  if(Request[i,j]<=Available[j])
+  {
+      
+  }
+  else
+  {
+      result = false;
+  }
   return result;
 }
 
@@ -56,6 +65,15 @@ void AddToAvailable(int i) {
   //
   // TODO: implement this function
   //
+    int j = Request[i];
+    if (IsRequestLessEqual(i)==true)
+    {
+        Available[j]=Request[i,j];
+    }
+    else
+    {
+        Available[j]=0;
+    }
 }
 
 // PrintDeadlocks - print indices of deadlocked processes
@@ -64,6 +82,26 @@ void PrintDeadlocks(void) {
   //
   // TODO: implement this function
   //
+    cout<<"Deadlocked processes:      ";
+   for(int j=0;j<50;j++)
+   {
+       if(Available[j]==0)
+       {
+           
+       }
+       else
+       {
+           for(int i=0;i<50;++i)
+           {
+               if(Request[i]==j)
+               {
+                   cout<<i<<"   ";
+               }
+           }
+              
+       }
+   }
+    
 }
 
 // ReadSystemConfig - read the system configuration from the
