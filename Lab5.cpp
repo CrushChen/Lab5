@@ -9,11 +9,12 @@
 //
 // Template author: Mike Goss (mikegoss@cs.du.edu)
 //
-// Student name: [your name here]
+// Student names: Peter Gish, Tristan Gay, Chenchen Mao
 
 #include <fstream>
 #include <iostream>
 #include <iomanip>
+#include <vector>
 
 using std::cin;
 using std::cout;
@@ -31,66 +32,71 @@ namespace {
     int Available[kMaxResources];
     int Allocation[kMaxProcesses][kMaxResources];
     int Request[kMaxProcesses][kMaxResources];
+    std::vector<int> DeadLocked; //Keeps track of the deadlocked processes
 
     int numProcesses; // actual number of processes
     int numResources; // actual number of resources
+
+    
+
+    // AddToAvailable - add each element in Allocation[i] to corresponding
+    //   element in Available
+    //
+    // @param i - index of row in Allocation array
+    void addAvailable(int i) {
+        for (int j = 0; j < kMaxResources; j++) {
+            Available[j] += Allocation[i][j];
+        }
+    }
 
     // IsRequestLessEqual - compare row of Request array to Available
     //
     // @param i - index of row in Request array
     // @returns true if every element of Request[i] is <= corresponding element
     //          of Available, false otherwise.
-
-    bool IsRequestLessEqual(int i) {
+    bool lessEqual(int i) {
         bool result = true;
-        //
-        // TODO: implement this function
-        //
         int check = 0;
-        for (int j = 0; j < numResources; j++) {
+        for (int j = 0; j < kMaxResources; j++) {
             if (Request[i][j] <= Available[j]) {
-                check = check + 1;
-            }
-            else {
-
+                ++check;
             }
         }
-        if (check != numResources) {
+        if (check != kMaxResources) {
             result = false;
         }
         return result;
     }
 
-    // AddToAvailable - add each element in Allocation[i] to corresponding
-    //   element in Available
-    //
-    // @param i - index of row in Allocation array
-
-    void AddToAvailable(int i) {
-        //
-        // TODO: implement this function
-        //
-        if (IsRequestLessEqual(i) == true) {
-            for (int j = 0; j < numResources; j++) {
-                Available[j] += Allocation[i][j];
-            }
-
+    void SystemUpdate() {
+        /* Unmark all processes*/
+        for (int i = 0; i < numProcesses; ++i) {
+            DeadLocked.push_back(i);
         }
-
+        
+        /* Go through every unmarked process and check
+         * for deadlock
+         */
+        for(int i = 0; i < numProcesses; ++i){ 
+            if (lessEqual(i) && DeadLocked.at(i) != -1) {
+                addAvailable(i);
+                DeadLocked.at(i) = -1;
+                i = 0; //Need to go back over every unmarked process 
+                       //since Available has been updated
+            }
+        }
     }
 
     // PrintDeadlocks - print indices of deadlocked processes
     //
-
     void PrintDeadlocks(void) {
-        //
-        // TODO: implement this function
-        //
         cout << "Deadlocked processes:      ";
-        for (int i = 1; i < numProcesses+1; i++) {
-            cout<<i<<"   ";
+        SystemUpdate();
+        for (int process : DeadLocked) {
+            if(process != -1){ //Only print out unmarked processes
+                cout << process << "   ";
+            }
         }
-
     }
 
     // ReadSystemConfig - read the system configuration from the
@@ -126,7 +132,6 @@ namespace {
                     exit(2);
         }
         cout << numProcesses << " processes, " << numResources << " resources\n";
-
         // Read the Available array
         for (int i = 0; i < numResources; ++i) {
             in >> Available[i];
