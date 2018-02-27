@@ -23,183 +23,182 @@ using std::setw;
 
 namespace {
 
-// Define maximum supported data sizes.
-const int kMaxProcesses = 50;  // maximum number of processes
-const int kMaxResources = 50;  // maximum number of resources
+    // Define maximum supported data sizes.
+    const int kMaxProcesses = 50; // maximum number of processes
+    const int kMaxResources = 50; // maximum number of resources
 
-// Define arrays for algorithm
-int Available[kMaxResources];
-int Allocation[kMaxProcesses][kMaxResources];
-int Request[kMaxProcesses][kMaxResources];
+    // Define arrays for algorithm
+    int Available[kMaxResources];
+    int Allocation[kMaxProcesses][kMaxResources];
+    int Request[kMaxProcesses][kMaxResources];
 
-int numProcesses;   // actual number of processes
-int numResources;   // actual number of resources
+    int numProcesses; // actual number of processes
+    int numResources; // actual number of resources
 
-// IsRequestLessEqual - compare row of Request array to Available
-//
-// @param i - index of row in Request array
-// @returns true if every element of Request[i] is <= corresponding element
-//          of Available, false otherwise.
-bool IsRequestLessEqual(int i) {
-  bool result = true;
-  //
-  // TODO: implement this function
-  //
-  int j = Request[i];
-  if(Request[i,j]<=Available[j])
-  {
-      
-  }
-  else
-  {
-      result = false;
-  }
-  return result;
-}
+    // IsRequestLessEqual - compare row of Request array to Available
+    //
+    // @param i - index of row in Request array
+    // @returns true if every element of Request[i] is <= corresponding element
+    //          of Available, false otherwise.
 
-// AddToAvailable - add each element in Allocation[i] to corresponding
-//   element in Available
-//
-// @param i - index of row in Allocation array
-void AddToAvailable(int i) {
-  //
-  // TODO: implement this function
-  //
-    int j = Request[i];
-    if (IsRequestLessEqual(i)==true)
-    {
-        Available[j]=Request[i,j];
-    }
-    else
-    {
-        Available[j]=0;
-    }
-}
+    bool IsRequestLessEqual(int i) {
+        bool result = true;
+        //
+        // TODO: implement this function
+        //
+        int check = 0;
+        for (int j = 0; j < kMaxResources; j++) {
+            if (Request[i][j] <= Available[j]) {
+                check = check + 1;
+            }
+            else {
 
-// PrintDeadlocks - print indices of deadlocked processes
-//
-void PrintDeadlocks(void) {
-  //
-  // TODO: implement this function
-  //
-    cout<<"Deadlocked processes:      ";
-   for(int j=0;j<50;j++)
-   {
-       if(Available[j]==0)
-       {
-           
-       }
-       else
-       {
-           for(int i=0;i<50;++i)
-           {
-               if(Request[i]==j)
-               {
-                   cout<<i<<"   ";
-               }
-           }
-              
-       }
-   }
-    
-}
+            }
+        }
+        if (check != kMaxResources) {
+            result = false;
+        }
+        return result;
+    }
 
-// ReadSystemConfig - read the system configuration from the
-//   input file, specified in argv[1].
-void ReadSystemConfig(const char *fileName) {
-  // Clear the configuration arrays
-  for (int j = 0; j < kMaxResources; ++j) {
-    Available[j] = 0;
-    for (int i = 0; i < kMaxProcesses; ++i) {
-      Allocation[i][j] = 0;
-      Request[i][j] = 0;
-    }
-  }
+    // AddToAvailable - add each element in Allocation[i] to corresponding
+    //   element in Available
+    //
+    // @param i - index of row in Allocation array
 
-  ifstream in;
-  in.open(fileName);
-  if (!in.is_open()) {
-    cerr << "ERROR: input file not found: " << fileName << "\n";
-    exit(2);
-  }
-  
-  // Read the actual number of processes and resources
-  in >> numProcesses >> numResources;
-  if (in.fail()) {
-    cerr << "ERROR: failed to read numProcesses and numResources\n";
-    exit(2);
-  }
-  if (numProcesses <= 0 || numProcesses > kMaxProcesses
-      || numResources <= 0 || numResources > kMaxResources ) {
-    cerr << "ERROR: out of range value, numProcesses = " << numProcesses
-            << "numResources = " << numResources << "\n",
-    exit(2);
-  }
-  cout << numProcesses << " processes, " << numResources << " resources\n";
-  
-  // Read the Available array
-  for (int i = 0; i < numResources; ++i) {
-    in >> Available[i];
-    if (in.fail()) {
-      cerr << "ERROR: failed to read Available[" << i << "]\n";
-      exit(2);
+    void AddToAvailable(int i) {
+        //
+        // TODO: implement this function
+        //
+        if (IsRequestLessEqual(i) == true) {
+            for (int j = 0; j < kMaxResources; j++) {
+                Available[j] + = Request[i][j];
+            }
+
+        }
+
     }
-  }
-  cout << "Available:\n\t";
-  for (int i = 0; i < numResources; ++i) {
-    cout << setw(3) << Available[i];
-  }
-  cout << "\n";
-  
-  // Read the Allocation array
-  for (int i = 0; i < numProcesses; ++i) {
-    for (int j = 0; j < numResources; ++j) {
-      in >> Allocation[i][j];
-      if (in.fail()) {
-        cerr << "ERROR: failed to read Alocation[" << i << "][" << j << "]\n";
-        exit(2);
-      }
+
+    // PrintDeadlocks - print indices of deadlocked processes
+    //
+
+    void PrintDeadlocks(void) {
+        //
+        // TODO: implement this function
+        //
+        cout << "Deadlocked processes:      ";
+        for (int j = 0; j < 50; j++) {
+            if (Available[j] == 0) {
+
+            } else {
+                for (int i = 0; i < 50; ++i) {
+                    if (Request[i] == j) {
+                        cout << i << "   ";
+                    }
+                }
+
+            }
+        }
+
     }
-  }
-  cout << "Allocation:\n";
-  for (int i = 0; i < numProcesses; ++i) {
-    cout << "\t";
-    for (int j = 0; j < numResources; ++j) {
-      cout << setw(3) << Allocation[i][j];
+
+    // ReadSystemConfig - read the system configuration from the
+    //   input file, specified in argv[1].
+
+    void ReadSystemConfig(const char *fileName) {
+        // Clear the configuration arrays
+        for (int j = 0; j < kMaxResources; ++j) {
+            Available[j] = 0;
+            for (int i = 0; i < kMaxProcesses; ++i) {
+                Allocation[i][j] = 0;
+                Request[i][j] = 0;
+            }
+        }
+
+        ifstream in;
+        in.open(fileName);
+        if (!in.is_open()) {
+            cerr << "ERROR: input file not found: " << fileName << "\n";
+            exit(2);
+        }
+
+        // Read the actual number of processes and resources
+        in >> numProcesses >> numResources;
+        if (in.fail()) {
+            cerr << "ERROR: failed to read numProcesses and numResources\n";
+            exit(2);
+        }
+        if (numProcesses <= 0 || numProcesses > kMaxProcesses
+                || numResources <= 0 || numResources > kMaxResources) {
+            cerr << "ERROR: out of range value, numProcesses = " << numProcesses
+                    << "numResources = " << numResources << "\n",
+                    exit(2);
+        }
+        cout << numProcesses << " processes, " << numResources << " resources\n";
+
+        // Read the Available array
+        for (int i = 0; i < numResources; ++i) {
+            in >> Available[i];
+            if (in.fail()) {
+                cerr << "ERROR: failed to read Available[" << i << "]\n";
+                exit(2);
+            }
+        }
+        cout << "Available:\n\t";
+        for (int i = 0; i < numResources; ++i) {
+            cout << setw(3) << Available[i];
+        }
+        cout << "\n";
+
+        // Read the Allocation array
+        for (int i = 0; i < numProcesses; ++i) {
+            for (int j = 0; j < numResources; ++j) {
+                in >> Allocation[i][j];
+                if (in.fail()) {
+                    cerr << "ERROR: failed to read Alocation[" << i << "][" << j << "]\n";
+                    exit(2);
+                }
+            }
+        }
+        cout << "Allocation:\n";
+        for (int i = 0; i < numProcesses; ++i) {
+            cout << "\t";
+            for (int j = 0; j < numResources; ++j) {
+                cout << setw(3) << Allocation[i][j];
+            }
+            cout << "\n";
+        }
+
+        // Read the Request array
+        for (int i = 0; i < numProcesses; ++i) {
+            for (int j = 0; j < numResources; ++j) {
+                in >> Request[i][j];
+                if (in.fail()) {
+                    cerr << "ERROR: failed to read Request[" << i << "][" << j << "]\n";
+                    exit(2);
+                }
+            }
+        }
+        cout << "Request:\n";
+        for (int i = 0; i < numProcesses; ++i) {
+            cout << "\t";
+            for (int j = 0; j < numResources; ++j) {
+                cout << setw(3) << Request[i][j];
+            }
+            cout << "\n";
+        }
     }
-    cout << "\n";
-  }
-  
-  // Read the Request array
-  for (int i = 0; i < numProcesses; ++i) {
-    for (int j = 0; j < numResources; ++j) {
-      in >> Request[i][j];
-      if (in.fail()) {
-        cerr << "ERROR: failed to read Request[" << i << "][" << j << "]\n";
-        exit(2);
-      }
-    }
-  }
-  cout << "Request:\n";
-  for (int i = 0; i < numProcesses; ++i) {
-    cout << "\t";
-    for (int j = 0; j < numResources; ++j) {
-      cout << setw(3) << Request[i][j];
-    }
-    cout << "\n";
-  }
-}
 
 } // namespace
 
 int main(int argc, char *argv[]) {
-  // Read system configuration
-  if (argc != 2) {
-    cerr << "usage: lab5 filename\n";
-    exit(1);
-  }
-  ReadSystemConfig(argv[1]);
-  PrintDeadlocks();
+    // Read system configuration
+    if (argc != 2) {
+        cerr << "usage: lab5 filename\n";
+        exit(1);
+    }
+    ReadSystemConfig(argv[1]);
+    PrintDeadlocks();
 
-  return 0;
+    return 0;
 }
