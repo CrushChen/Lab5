@@ -72,7 +72,7 @@ namespace {
         //
         if (IsRequestLessEqual(i) == true) {
             for (int j = 0; j < kMaxResources; j++) {
-                Available[j] + = Request[i][j];
+                Available[j] += Request[i][j];
             }
 
         }
@@ -87,12 +87,12 @@ namespace {
         // TODO: implement this function
         //
         cout << "Deadlocked processes:      ";
-        for (int j = 0; j < 50; j++) {
+        for (int j = 0; j < kMaxResources; j++) {
             if (Available[j] == 0) {
 
             } else {
-                for (int i = 0; i < 50; ++i) {
-                    if (Request[i] == j) {
+                for (int i = 0; i < kMaxProcesses; i++) {
+                    if (Request[i][j] == j) {
                         cout << i << "   ";
                     }
                 }
