@@ -72,7 +72,7 @@ namespace {
         //
         if (IsRequestLessEqual(i) == true) {
             for (int j = 0; j < kMaxResources; j++) {
-                Available[j] += Request[i][j];
+                Available[j] += Allocation[i][j];
             }
 
         }
