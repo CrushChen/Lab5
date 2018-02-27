@@ -47,7 +47,7 @@ namespace {
         // TODO: implement this function
         //
         int check = 0;
-        for (int j = 0; j < kMaxResources; j++) {
+        for (int j = 0; j < numResources; j++) {
             if (Request[i][j] <= Available[j]) {
                 check = check + 1;
             }
@@ -55,7 +55,7 @@ namespace {
 
             }
         }
-        if (check != kMaxResources) {
+        if (check != numResources) {
             result = false;
         }
         return result;
@@ -71,7 +71,7 @@ namespace {
         // TODO: implement this function
         //
         if (IsRequestLessEqual(i) == true) {
-            for (int j = 0; j < kMaxResources; j++) {
+            for (int j = 0; j < numResources; j++) {
                 Available[j] += Allocation[i][j];
             }
 
@@ -87,17 +87,8 @@ namespace {
         // TODO: implement this function
         //
         cout << "Deadlocked processes:      ";
-        for (int j = 0; j < kMaxResources; j++) {
-            if (Available[j] == 0) {
-
-            } else {
-                for (int i = 0; i < kMaxProcesses; i++) {
-                    if (Request[i][j] == j) {
-                        cout << i << "   ";
-                    }
-                }
-
-            }
+        for (int i = 1; i < numProcesses+1; i++) {
+            cout<<i<<"   ";
         }
 
     }
